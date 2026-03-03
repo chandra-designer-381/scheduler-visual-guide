@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+# Job Scheduler Visual State Architecture
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Internal design document for Sitetracker's Job Scheduler 2.0 visual state system. Shared with product, design, and engineering teams to align on how job states should be visually represented in the scheduler UI.
 
-Currently, two official plugins are available:
+## What this communicates
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Three teams are designing features that affect the same UI surface (the weekly schedule grid):
 
-## React Compiler
+1. **Draft & Auto Scheduling** — draft mode + Scout AI auto-scheduling
+2. **Execution Variance** — showing when field work diverges from the schedule
+3. **Core Scheduler** — the existing live schedule
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+This document proposes a unified visual grammar based on competitive analysis of Salesforce FSL, Dynamics 365, and Google Calendar.
 
-## Expanding the ESLint configuration
+### The three rules
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Color = Lifecycle Status only** (Blue = Scheduled, Green = In Progress, Gray = Stale)
+2. **Opacity/Hatching = Commitment Level** (Solid = Live, Hatched + dashed = Draft)
+3. **Small Badge = Origin** (Scout "S" badge for auto-scheduled, nothing for manual)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Vite + React 18 + TypeScript
+- Tailwind CSS v4
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Local development
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Build
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
 ```
+
+Output goes to `dist/`.
+
+## Deploy
+
+### Netlify
+
+- Build command: `npm run build`
+- Publish directory: `dist`
+
+### GitHub Pages
+
+Add `base: '/scheduler-visual-guide/'` to `vite.config.ts` before deploying to GitHub Pages (the base path must match the repo name).
